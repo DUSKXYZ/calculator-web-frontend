@@ -11,6 +11,33 @@ var errorMsg = document.getElementById("errorMsg");
 var historyBody = document.getElementById("historyBody");
 var usernameInput = document.getElementById("username");
 var currentUser = document.getElementById("currentUser");
+var serverStatus = document.getElementById("serverStatus");
+
+// 检查后端是否连接正常：能收到响应（哪怕是错误响应）就算已连接
+function checkServer() {
+    fetch(API_BASE + "/history")
+        .then(function () {
+            setServerStatus(true);
+        })
+        .catch(function () {
+            setServerStatus(false);
+        });
+}
+
+// 更新标题下方的连接状态提示
+function setServerStatus(ok) {
+    if (ok) {
+        serverStatus.innerText = "● 后端已连接";
+        serverStatus.className = "server-status ok";
+    } else {
+        serverStatus.innerText = "● 后端未连接，无法计算和读取历史记录";
+        serverStatus.className = "server-status fail";
+    }
+}
+
+// 页面打开时检查一次，之后每 5 秒自动检查一次
+checkServer();
+setInterval(checkServer, 5000);
 
 // 用户名只保存在浏览器里用来标识身份，历史记录本身全部存在后端数据库
 var username = localStorage.getItem("calc_username") || "";
@@ -104,6 +131,7 @@ function calculate() {
         })
         .catch(function () {
             // 后端没启动或网络出错时会走到这里
+            setServerStatus(false);
             errorMsg.innerText = "无法连接后端服务器，请确认后端已启动";
         });
 }
@@ -138,6 +166,7 @@ function loadHistory() {
             }
         })
         .catch(function () {
+            setServerStatus(false);
             historyBody.innerHTML = "<tr><td colspan='4'>无法连接后端服务器</td></tr>";
         });
 }
@@ -154,6 +183,7 @@ function deleteHistory(id) {
             loadHistory();
         })
         .catch(function () {
+            setServerStatus(false);
             errorMsg.innerText = "无法连接后端服务器，请确认后端已启动";
         });
 }
@@ -172,6 +202,7 @@ function clearHistory() {
             loadHistory();
         })
         .catch(function () {
+            setServerStatus(false);
             errorMsg.innerText = "无法连接后端服务器，请确认后端已启动";
         });
 }

@@ -14,6 +14,21 @@ h1 {
     margin-bottom: 20px;
 }
 
+/* 后端连接状态提示 */
+.server-status {
+    text-align: center;
+    font-size: 17px;
+    margin-bottom: 15px;
+}
+
+.server-status.ok {
+    color: #28a745;
+}
+
+.server-status.fail {
+    color: #d9534f;
+}
+
 /* 用户名输入区 */
 .user-bar {
     display: flex;
@@ -51,6 +66,8 @@ h1 {
     justify-content: center;
     gap: 45px;
     flex-wrap: wrap;
+    /* 两栏各自按内容高度显示，防止右边历史记录变多时把计算器外框拉高 */
+    align-items: flex-start;
 }
 
 /* 计算器部分 */
