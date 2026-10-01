@@ -1,5 +1,6 @@
 // 计算器前端脚本
 // 前端只负责界面和交互，所有计算都通过 HTTP 请求交给后端完成
+// 历史记录按用户名隔离，每个人只能看到自己的记录
 
 // 后端接口地址
 var API_BASE = "http://localhost:8080/api";
@@ -8,6 +9,40 @@ var API_BASE = "http://localhost:8080/api";
 var display = document.getElementById("display");
 var errorMsg = document.getElementById("errorMsg");
 var historyBody = document.getElementById("historyBody");
+var usernameInput = document.getElementById("username");
+var currentUser = document.getElementById("currentUser");
+
+// 用户名只保存在浏览器里用来标识身份，历史记录本身全部存在后端数据库
+var username = localStorage.getItem("calc_username") || "";
+
+// 页面打开时，如果以前输入过用户名就直接显示
+if (username !== "") {
+    usernameInput.value = username;
+    showCurrentUser();
+    loadHistory();
+} else {
+    currentUser.innerText = "请先输入用户名再开始使用";
+    historyBody.innerHTML = "<tr><td colspan='4'>请先输入用户名</td></tr>";
+}
+
+// 点击确认按钮，保存用户名并加载这个用户的历史记录
+function saveUsername() {
+    var name = usernameInput.value.trim();
+    if (name === "") {
+        errorMsg.innerText = "用户名不能为空";
+        return;
+    }
+    username = name;
+    localStorage.setItem("calc_username", username);
+    showCurrentUser();
+    errorMsg.innerText = "";
+    loadHistory();
+}
+
+// 显示当前登录的用户名
+function showCurrentUser() {
+    currentUser.innerText = "当前用户：" + username;
+}
 
 // 按数字、运算符、括号按钮时，把字符加到显示框里
 function press(ch) {
@@ -26,8 +61,20 @@ function clearAll() {
     errorMsg.innerText = "";
 }
 
+// 检查是否已输入用户名
+function checkUsername() {
+    if (username === "") {
+        errorMsg.innerText = "请先输入用户名并点击确认";
+        return false;
+    }
+    return true;
+}
+
 // 点击等号：把表达式发给后端计算
 function calculate() {
+    if (!checkUsername()) {
+        return;
+    }
     var expression = display.value;
     if (expression === "") {
         errorMsg.innerText = "请先输入表达式";
@@ -40,7 +87,7 @@ function calculate() {
     fetch(API_BASE + "/calculate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ expression: sendExpression })
+        body: JSON.stringify({ username: username, expression: sendExpression })
     })
         .then(function (response) { return response.json(); })
         .then(function (data) {
@@ -61,9 +108,13 @@ function calculate() {
         });
 }
 
-// 从后端获取历史记录并显示在表格里
+// 从后端获取当前用户的历史记录并显示在表格里
 function loadHistory() {
-    fetch(API_BASE + "/history")
+    if (username === "") {
+        historyBody.innerHTML = "<tr><td colspan='4'>请先输入用户名</td></tr>";
+        return;
+    }
+    fetch(API_BASE + "/history?username=" + encodeURIComponent(username))
         .then(function (response) { return response.json(); })
         .then(function (data) {
             historyBody.innerHTML = "";
@@ -91,9 +142,12 @@ function loadHistory() {
         });
 }
 
-// 删除指定 id 的历史记录
+// 删除指定 id 的历史记录（只能删自己的）
 function deleteHistory(id) {
-    fetch(API_BASE + "/history/" + id, { method: "DELETE" })
+    if (!checkUsername()) {
+        return;
+    }
+    fetch(API_BASE + "/history/" + id + "?username=" + encodeURIComponent(username), { method: "DELETE" })
         .then(function (response) { return response.json(); })
         .then(function () {
             // 删除成功后重新查询最新的历史记录
@@ -104,12 +158,15 @@ function deleteHistory(id) {
         });
 }
 
-// 清空全部历史记录
+// 清空当前用户的全部历史记录
 function clearHistory() {
-    if (!confirm("确定要清空全部历史记录吗？")) {
+    if (!checkUsername()) {
         return;
     }
-    fetch(API_BASE + "/history", { method: "DELETE" })
+    if (!confirm("确定要清空你的全部历史记录吗？")) {
+        return;
+    }
+    fetch(API_BASE + "/history?username=" + encodeURIComponent(username), { method: "DELETE" })
         .then(function (response) { return response.json(); })
         .then(function () {
             loadHistory();
@@ -118,6 +175,3 @@ function clearHistory() {
             errorMsg.innerText = "无法连接后端服务器，请确认后端已启动";
         });
 }
-
-// 页面打开时先加载一次历史记录
-loadHistory();

@@ -8,6 +8,14 @@
 <body>
 <h1>Calculator</h1>
 
+<!-- 用户名输入区：每个人的历史记录单独保存 -->
+<div class="user-bar">
+    <label for="username">用户名：</label>
+    <input type="text" id="username" placeholder="请输入你的名字">
+    <button onclick="saveUsername()">确认</button>
+    <span id="currentUser" class="current-user"></span>
+</div>
+
 <div class="container">
     <!-- 左边：计算器 -->
     <div class="calculator">
