@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>简单计算器</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+<h1>简单计算器</h1>
+
+<div class="container">
+    <!-- 左边：计算器 -->
+    <div class="calculator">
+        <!-- 表达式显示框 -->
+        <input type="text" id="display" readonly placeholder="请输入表达式">
+
+        <!-- 错误提示 -->
+        <div id="errorMsg" class="error"></div>
+
+        <!-- 按钮区 -->
+        <div class="buttons">
+            <button onclick="press('7')">7</button>
+            <button onclick="press('8')">8</button>
+            <button onclick="press('9')">9</button>
+            <button onclick="press('/')">÷</button>
+
+            <button onclick="press('4')">4</button>
+            <button onclick="press('5')">5</button>
+            <button onclick="press('6')">6</button>
+            <button onclick="press('*')">×</button>
+
+            <button onclick="press('1')">1</button>
+            <button onclick="press('2')">2</button>
+            <button onclick="press('3')">3</button>
+            <button onclick="press('-')">-</button>
+
+            <button onclick="press('0')">0</button>
+            <button onclick="press('.')">.</button>
+            <button onclick="press('(')">(</button>
+            <button onclick="press(')')">)</button>
+
+            <button onclick="press('+')">+</button>
+            <button onclick="clearOne()">←</button>
+            <button onclick="clearAll()">C</button>
+            <button class="equal" onclick="calculate()">=</button>
+        </div>
+
+        <p class="tip">提示：计算由后端服务器完成，前端只负责显示。</p>
+    </div>
+
+    <!-- 右边：历史记录 -->
+    <div class="history">
+        <h2>计算历史</h2>
+        <div class="history-buttons">
+            <button onclick="loadHistory()">刷新</button>
+            <button onclick="clearHistory()">清空历史</button>
+        </div>
+        <table border="1">
+            <thead>
+            <tr>
+                <th>表达式</th>
+                <th>结果</th>
+                <th>时间</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody id="historyBody">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
