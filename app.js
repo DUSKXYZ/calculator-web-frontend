@@ -2,8 +2,12 @@
 // 前端只负责界面和交互，所有计算都通过 HTTP 请求交给后端完成
 // 历史记录按用户名隔离，每个人只能看到自己的记录
 
-// 后端接口地址
-var API_BASE = "http://localhost:8080/api";
+// 后端接口地址：
+// 本地运行（双击 html 或 localhost）时连本机 8080 端口的后端；
+// 通过公网地址访问时，使用同域名的 /api（由反向代理转发到后端），
+// 这样前端部署到任何域名都不用手动改地址。
+var isLocal = location.hostname === "" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
+var API_BASE = isLocal ? "http://localhost:8080/api" : location.origin + "/api";
 
 // 获取页面元素
 var display = document.getElementById("display");
