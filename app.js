@@ -4,10 +4,11 @@
 
 // 后端接口地址：
 // 本地运行（双击 html 或 localhost）时连本机 8080 端口的后端；
-// 通过公网地址访问时，使用同域名的 /api（由反向代理转发到后端），
-// 这样前端部署到任何域名都不用手动改地址。
+// 公网部署到 Railway 时，把下面 BACKEND_URL 改成后端服务的域名（例如 https://xxx.up.railway.app）；
+// BACKEND_URL 留空时走"同源 /api"模式，配合本地一键部署.bat 的反向代理使用。
+var BACKEND_URL = "";
 var isLocal = location.hostname === "" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
-var API_BASE = isLocal ? "http://localhost:8080/api" : location.origin + "/api";
+var API_BASE = isLocal ? "http://localhost:8080/api" : (BACKEND_URL !== "" ? BACKEND_URL + "/api" : location.origin + "/api");
 
 // 获取页面元素
 var display = document.getElementById("display");

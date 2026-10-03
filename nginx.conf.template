@@ -1,0 +1,11 @@
+# nginx 站点配置模板
+# ${PORT} 会在容器启动时被替换成 Railway 分配的端口号
+server {
+    listen ${PORT};
+    server_name _;
+
+    location / {
+        root /usr/share/nginx/html;
+        index index.html;
+    }
+}
