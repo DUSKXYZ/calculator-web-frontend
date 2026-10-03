@@ -6,7 +6,7 @@
 // 本地运行（双击 html 或 localhost）时连本机 8080 端口的后端；
 // 公网部署到 Railway 时，把下面 BACKEND_URL 改成后端服务的域名（例如 https://xxx.up.railway.app）；
 // BACKEND_URL 留空时走"同源 /api"模式，配合本地一键部署.bat 的反向代理使用。
-var BACKEND_URL = "";
+var BACKEND_URL = "https://calculator-web-backend-production.up.railway.app";
 var isLocal = location.hostname === "" || location.hostname === "localhost" || location.hostname === "127.0.0.1";
 var API_BASE = isLocal ? "http://localhost:8080/api" : (BACKEND_URL !== "" ? BACKEND_URL + "/api" : location.origin + "/api");
 
